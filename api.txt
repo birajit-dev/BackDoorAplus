@@ -1,0 +1,78 @@
+exports.addApiProperty = async (req, res) => {
+  try {
+    // Check if a file was uploaded
+    upload(req, res, async function (err) {
+      if (err) {
+        console.error(err);
+        return res.status(400).json({
+          success: false,
+          message: 'File upload error'
+        });
+      }
+
+      const imageName = req.filename;
+      const imagePath = req.file ? req.file.path : null; // This will give you the path to the uploaded image
+      const getData = req.body;
+
+      const Townhomes = getData.property_townhomes === 'on' ? 'Yes' : 'No'; // Check if the checkbox is checked
+      const Lofts = getData.property_lofts === 'on' ? 'Yes' : 'No'; // Check if the checkbox is checked
+      const Livework = getData.property_live_work === 'on' ? 'Yes' : 'No'; // Check if the checkbox is checked
+      const propertyHighrise = getData.property_highrise === 'on' ? 'Yes' : 'No'; // Check if the checkbox is checked
+      const ASAP = getData.asap === 'on' ? 'Yes' : 'No'; // Check if the checkbox is checked
+      const nDate = moment().format('lll');
+      
+      let AddProperty = new PropertyModel({
+        property_tittle: getData.property_tittle,
+        property_type: getData.property_type,
+        property_city: getData.property_city,
+        property_county: getData.property_county,
+        property_room: getData.property_room,
+        property_address: getData.property_address,
+        property_latitude: getData.property_latitude,
+        property_longitude: getData.property_longitude,
+        property_bed_1_bath: getData.property_bed_1_bath,
+        property_bed_1_square: getData.property_bed_1_square,
+        property_bed_1_price: getData.property_bed_1_price,
+        property_bed_2_bath: getData.property_bed_2_bath,
+        property_bed_2_square: getData.property_bed_2_square,
+        property_bed_2_price: getData.property_bed_2_price,
+        property_bed_3_bath: getData.property_bed_3_bath,
+        property_bed_3_square: getData.property_bed_3_square,
+        property_bed_3_price: getData.property_bed_3_price,
+        property_studio_bath: getData.property_studio_bath,
+        property_studio_square: getData.property_studio_square,
+        property_studio_price: getData.property_studio_price,
+        property_townhomes: Townhomes,
+        property_lofts: Lofts,
+        property_highrise: propertyHighrise,
+        property_live_work: Livework,
+        property_promo_code: getData.property_promo_code,
+        property_website_link: getData.property_website_link,
+        property_update_date: nDate,
+        property_status: getData.property_status,
+        asap: ASAP,
+        elementary: getData.elementary,
+        middle: getData.middle,
+        high: getData.high,
+        property_state: getData.property_state,
+        property_features_image: imageName, // Save the image path in the database
+      });
+
+      // Save the property to the database
+      const savedProperty = await AddProperty.save();
+
+      res.status(201).json({
+        success: true,
+        message: 'Property added successfully',
+        data: savedProperty
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      error: error.message
+    });
+  }
+};
