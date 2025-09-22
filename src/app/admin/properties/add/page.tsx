@@ -308,7 +308,7 @@ export default function AddPropertyPage() {
         formDataToSend.append('image', formData.image);
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/web/property`, {
+      const response = await fetch(`http://localhost:8000/api/web/addpropertyNext`, {
         method: 'POST',
         body: formDataToSend,
       });
